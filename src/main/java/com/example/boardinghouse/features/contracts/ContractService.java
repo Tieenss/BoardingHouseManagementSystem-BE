@@ -41,7 +41,7 @@ public class ContractService {
         Room room = roomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new RuntimeException("Room not found"));
 
-        if (!"available".equals(room.getStatus())) {
+        if (room.getStatus() != Room.RoomStatus.available) {
             throw new RuntimeException("Room is already rented or under maintenance");
         }
 
@@ -63,7 +63,7 @@ public class ContractService {
         Contract savedContract = contractRepository.save(contract);
 
         // Chuyển trạng thái phòng sang 'rented'
-        room.setStatus("rented");
+        room.setStatus(Room.RoomStatus.rented);
         roomRepository.save(room);
 
         return mapToResponseCustom(savedContract, room.getRoomNumber(), request.getTenantFullName(), generatedUsername,
@@ -81,13 +81,13 @@ public class ContractService {
             // Trả phòng cũ về trạng thái trống
             Room oldRoom = roomRepository.findById(contract.getRoomId()).orElse(null);
             if (oldRoom != null) {
-                oldRoom.setStatus("available");
+                oldRoom.setStatus(Room.RoomStatus.available);
                 roomRepository.save(oldRoom);
             }
             // Khóa phòng mới sang trạng thái đã thuê
             Room newRoom = roomRepository.findById(request.getRoomId())
                     .orElseThrow(() -> new RuntimeException("New room not found"));
-            newRoom.setStatus("rented");
+            newRoom.setStatus(Room.RoomStatus.rented);
             roomRepository.save(newRoom);
 
             contract.setRoomId(newRoom.getId());
@@ -115,7 +115,7 @@ public class ContractService {
         // Giải phóng phòng trọ về lại trạng thái 'available'
         Room room = roomRepository.findById(contract.getRoomId()).orElse(null);
         if (room != null) {
-            room.setStatus("available");
+            room.setStatus(Room.RoomStatus.available);
             roomRepository.save(room);
         }
 
@@ -131,7 +131,7 @@ public class ContractService {
         // Trước khi xóa hợp đồng, hãy trả trạng thái phòng về 'available'
         Room room = roomRepository.findById(contract.getRoomId()).orElse(null);
         if (room != null) {
-            room.setStatus("available");
+            room.setStatus(Room.RoomStatus.available);
             roomRepository.save(room);
         }
 

@@ -3,6 +3,8 @@ package com.example.boardinghouse.features.room;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "rooms")
@@ -12,6 +14,12 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 public class Room {
+
+    public enum RoomStatus {
+        available,
+        rented,
+        maintenance
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +40,11 @@ public class Room {
     @Column(name = "max_occupants")
     private Integer maxOccupants;
 
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(nullable = false)
-    private String status = "available"; // Trạng thái: available, rented, maintenance
+    @Builder.Default
+    private RoomStatus status = RoomStatus.available;
 
     @Column(columnDefinition = "TEXT")
     private String description;
