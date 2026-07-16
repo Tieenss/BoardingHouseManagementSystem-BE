@@ -47,4 +47,27 @@ public class RoomController {
         roomService.deleteRoom(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{roomId}/images")
+    public ResponseEntity<RoomImage> uploadRoomImage(
+            @PathVariable Long roomId,
+            @RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        try {
+            RoomImage roomImage = roomService.uploadRoomImage(roomId, file);
+            return ResponseEntity.ok(roomImage);
+        } catch (java.io.IOException e) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/{roomId}/images")
+    public ResponseEntity<List<RoomImage>> getRoomImages(@PathVariable Long roomId) {
+        return ResponseEntity.ok(roomService.getRoomImages(roomId));
+    }
+
+    @DeleteMapping("/images/{imageId}")
+    public ResponseEntity<Void> deleteRoomImage(@PathVariable Long imageId) {
+        roomService.deleteRoomImage(imageId);
+        return ResponseEntity.noContent().build();
+    }
 }

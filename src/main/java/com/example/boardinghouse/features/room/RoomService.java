@@ -43,8 +43,36 @@ public class RoomService {
         return roomRepository.save(room);
     }
 
+    @Autowired
+    private RoomImageRepository roomImageRepository;
+
+    @Autowired
+    private com.example.boardinghouse.common.FileUploadService fileUploadService;
+
     public void deleteRoom(Long id) {
         Room room = getRoomById(id);
         roomRepository.delete(room);
+    }
+
+    public RoomImage uploadRoomImage(Long roomId, org.springframework.web.multipart.MultipartFile file) throws java.io.IOException {
+        // Ensure room exists
+        getRoomById(roomId);
+        
+        String imageUrl = fileUploadService.uploadImage(file);
+        
+        RoomImage roomImage = RoomImage.builder()
+                .roomId(roomId)
+                .imageUrl(imageUrl)
+                .build();
+                
+        return roomImageRepository.save(roomImage);
+    }
+
+    public List<RoomImage> getRoomImages(Long roomId) {
+        return roomImageRepository.findByRoomId(roomId);
+    }
+
+    public void deleteRoomImage(Long imageId) {
+        roomImageRepository.deleteById(imageId);
     }
 }

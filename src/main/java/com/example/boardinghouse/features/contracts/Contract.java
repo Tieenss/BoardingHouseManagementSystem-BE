@@ -40,6 +40,7 @@ public class Contract {
     private String contractPdfUrl;
 
     @Column(nullable = false)
+    @Builder.Default
     private String status = "active"; // active, expired, terminated
 
     @Column(name = "appointment_id")
